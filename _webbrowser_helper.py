@@ -1,23 +1,31 @@
+import time, logging,os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
+# from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 
-from selenium.webdriver.support import expected_conditions as EC
+# from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from selenium.webdriver.common.action_chains import ActionChains
-from fake_user_agent import user_agent
+from fake_useragent import UserAgent
+from dotenv import load_dotenv
+
+# load Env
+load_dotenv()
+input_xpath = os.getenv("INPUT_XPATH")
+output_xpath = os.getenv("OUTPUT_XPATH")
+clear_xpath = os.getenv("CLEAR_XPATH")
 
 ## trans
-import time, logging
 logging.basicConfig(filename='./logs/gamespot_getter_broswer.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
+ua = UserAgent()
 
 class MyBrowserHelper(webdriver.Chrome):
     def __init__(self, url, driver_path):
         caps = DesiredCapabilities().CHROME
         caps["pageLoadStrategy"] = "eager"  # interactive
-        self.header = {'User-Agent': user_agent("chrome")}
+        self.header = {'User-Agent': ua.chrome}
         self.options = Options()
         #########################################################################
         ## 토끼전용 이미지,js 로딩하지 않음
@@ -128,9 +136,7 @@ class MyBrowserHelper(webdriver.Chrome):
     def google_trans(self, sk, tk, st):
         text_trans = ""
         url = f'https://translate.google.com/?sl={sk}&tl={tk}'
-        input_xpath = '//textarea[@aria-label="Source text"]'
-        output_xpath = '//div[@class="lRu31"]'
-        clear_xpath = '//button[@aria-label="Clear source text"]'
+
         # 번역하고자 하는 string의 길이가 3500넘을시
 
         self.get_url(url)
