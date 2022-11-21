@@ -1,6 +1,6 @@
 venv/
 .env
 !datas/
-datas/
+datas/*
 !logs/
-logs/
+logs/*
