@@ -1,8 +1,4 @@
 venv/
 .env
-!datas/
-datas/*
-!datas/*
-!logs/
-logs/*
-!logs/*
+datas/*.json
+logs/*.log
