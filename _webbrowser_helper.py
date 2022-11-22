@@ -11,10 +11,7 @@ from fake_useragent import UserAgent
 from dotenv import load_dotenv
 
 # load Env
-load_dotenv()
-input_xpath = os.getenv("INPUT_XPATH")
-output_xpath = os.getenv("OUTPUT_XPATH")
-clear_xpath = os.getenv("CLEAR_XPATH")
+
 
 ## trans
 logging.basicConfig(filename='./logs/gamespot_getter_broswer.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(name)s %(message)s')
@@ -44,6 +41,10 @@ class MyBrowserHelper(webdriver.Chrome):
         self.driver.set_window_size(2560, 1440)
         self.driver.implicitly_wait(1)
         self.driver.get(url)
+        load_dotenv()
+        self.input_xpath = os.getenv("INPUT_XPATH")
+        self.output_xpath = os.getenv("OUTPUT_XPATH")
+        self.clear_xpath = os.getenv("CLEAR_XPATH")
 
     def get_url(self, url):
         self.driver.get(url)
@@ -95,8 +96,7 @@ class MyBrowserHelper(webdriver.Chrome):
     def click_element(self, _xpath):
         try:
             if len(self.driver.find_elements(By.XPATH, _xpath)):
-                if (self.driver.find_elements(By.XPATH, _xpath)[0].is_enabled):
-                    self.driver.find_elements(By.XPATH, _xpath)[0].click()
+                self.driver.find_elements(By.XPATH, _xpath)[0].click()
         except Exception as e:
             logging.error(e)
 
@@ -113,11 +113,11 @@ class MyBrowserHelper(webdriver.Chrome):
         return [s[i:i + w] for i in range(0, len(s), w)]
 
     # 구글 번역 페이지에서 text, 입력 xpath, 출력 xpath, 그리고 입력창 삭제 버튼의 xpath를 지정
-    def paste_trans(self, text, input_xpath, output_xpath, clear_xpath):
-        input_element = self.get_element(input_xpath)
+    def paste_trans(self, text):
+        input_element = self.get_element(self.input_xpath)
         # Clear Text 버튼이 있을시만 클릭, output_xpath 내용이 있을때 === Clear Text Button 있을때
-        if len(self.driver.find_elements(By.XPATH, output_xpath)):
-            self.click_element(clear_xpath)
+        if len(self.driver.find_elements(By.XPATH, self.output_xpath)):
+            self.click_element(self.clear_xpath)
         input_element.send_keys(text)
         split_trans = ""
         count = 0
@@ -126,7 +126,7 @@ class MyBrowserHelper(webdriver.Chrome):
         while split_trans == "":
             time.sleep(1)
             count = count + 1
-            split_trans = self.get_element_attribute(output_xpath, 'innerText')
+            split_trans = self.get_element_attribute(self.output_xpath, 'innerText')
             # 20번 시도했으믄 그냥 break
             if count >= 20:
                 break;
@@ -140,14 +140,13 @@ class MyBrowserHelper(webdriver.Chrome):
         # 번역하고자 하는 string의 길이가 3500넘을시
 
         self.get_url(url)
-        print('###########################################################')
-        print('## Translate .')
+
         ## \n 포함시 줄바꾸기로 짤라서 번역하고 다시 줄바꾸기 붙이기.
         if "\n" in st:
             split_texts = st.split("\n")
             for split_text in split_texts:
                 if (len(split_text)):
-                    split_trans = self.paste_trans(split_text, input_xpath, output_xpath, clear_xpath)
+                    split_trans = self.paste_trans(split_text)
                     print('.', end='')
                     # 번역된 내용을 title_trans에 붙이기.
                     text_trans = text_trans + split_trans + '\n'
@@ -158,12 +157,10 @@ class MyBrowserHelper(webdriver.Chrome):
                 split_texts = self.text_wrap(st, 3500)
                 for split_text in split_texts:
                     if (len(split_text)):
-                        split_trans = self.paste_trans(split_text, input_xpath, output_xpath, clear_xpath)
+                        split_trans = self.paste_trans(split_text)
                         # 번역된 내용을 title_trans에 붙이기.
                         text_trans = text_trans + split_trans + '\n'
             # 한번에 번역 가능시 그냥 번역.
             else:
-                text_trans = self.paste_trans(st, input_xpath, output_xpath, clear_xpath)
-        print('###########################################################')
-        print('## end Translate .')
+                text_trans = self.paste_trans(st)
         return text_trans
