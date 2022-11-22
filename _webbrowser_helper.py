@@ -54,6 +54,12 @@ class MyBrowserHelper(webdriver.Chrome):
         else:
             return False
 
+    def is_there(self,_str):
+        if _str in self.driver.page_source:
+            return True
+        else:
+            return False
+
     def get_element(self, _xpath):
         return self.driver.find_element(By.XPATH, _xpath)
 
@@ -124,11 +130,11 @@ class MyBrowserHelper(webdriver.Chrome):
         # 3초 간격으로 , output area에 내용이 번역완성되었는지 체크,
         # 20번 시도하여 반환값없을시 그냥 break;
         while split_trans == "":
-            time.sleep(1)
+            time.sleep(0.5)
             count = count + 1
             split_trans = self.get_element_attribute(self.output_xpath, 'innerText')
             # 20번 시도했으믄 그냥 break
-            if count >= 20:
+            if count >= 5:
                 break;
         return split_trans
 

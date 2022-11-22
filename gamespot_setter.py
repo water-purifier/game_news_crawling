@@ -20,13 +20,15 @@ for json_file in json_files:
         json_data = json.load(file)
         try:
             if json_data:
-                time.sleep(0.5)
+                time.sleep(1)
                 res = requests.post(f'{api_server}/api/posts', json=json_data)
                 # 상태코드 200일시 해당 파일 삭제
                 if (res.status_code == 200):
                     # os.remove(json_file)
-                    print(res.text)
+                    # print(f'ok en : {json_file}')
+                    print('.', end='')
                 else:
-                    print(f'error : code : {res.status_code}')
+                    print('')
+                    print(f'error en : {json_file}, code : {res.status_code}')
         except Exception as e:
             logging.error(e)

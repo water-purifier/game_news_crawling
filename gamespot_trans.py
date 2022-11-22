@@ -34,19 +34,17 @@ for json_file in json_files:
                     page_dict['page_text_ko'] = browser.google_trans('en', 'ko', page_dict['page_text_en'])
                     page_dict['page_title_ko'] = browser.google_trans('en', 'ko', page_dict['page_title_en'])
                     page_dict['page_description_ko'] = browser.google_trans('en', 'ko', page_dict['page_description_en'])
-                    print('')
 
                 if (os.getenv('IS_CN') == '1'):
-                    print(' #text_cn', end='')
+                    print('#text_cn', end='')
                     page_dict['page_text_cn'] = browser.google_trans('en', 'zh-CN', page_dict['page_text_en'])
                     page_dict['page_title_cn'] = browser.google_trans('en', 'zh-CN', page_dict['page_title_en'])
                     page_dict['page_description_cn'] = browser.google_trans('en', 'zh-CN', page_dict['page_description_en'])
-                    print('')
                 ##############################################################################################
                 ## 파일 재저장.
                 with open(f'./datas/{page_dict["page_title_en"]}.json', 'w', encoding='utf-8') as outfile:
                     json.dump(page_dict, outfile)
-                    print('#refresh jsonFile ok.')
+                    print('  #refresh jsonFile ok.')
 
                 ##############################################################################################
                 ## db 갱신.
