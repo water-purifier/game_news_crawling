@@ -1,4 +1,4 @@
-import time, logging,os
+import time, logging, os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import WebDriverWait
@@ -17,6 +17,7 @@ from dotenv import load_dotenv
 logging.basicConfig(filename='./logs/gamespot_getter_broswer.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
 ua = UserAgent()
+
 
 class MyBrowserHelper(webdriver.Chrome):
     def __init__(self, url, driver_path):
@@ -54,7 +55,7 @@ class MyBrowserHelper(webdriver.Chrome):
         else:
             return False
 
-    def is_there(self,_str):
+    def is_there(self, _str):
         if _str in self.driver.page_source:
             return True
         else:
@@ -124,6 +125,8 @@ class MyBrowserHelper(webdriver.Chrome):
         # Clear Text 버튼이 있을시만 클릭, output_xpath 내용이 있을때 === Clear Text Button 있을때
         if len(self.driver.find_elements(By.XPATH, self.output_xpath)):
             self.click_element(self.clear_xpath)
+        # \t 가 있으면, tab 으로 여겨서, 붙여넣기 안됨. 그리하여 strip(c# 의 trim비슷)하여, \t \n , . 등을 없앨수 있음.
+        text = text.replace('\t','')
         input_element.send_keys(text)
         split_trans = ""
         count = 0
@@ -136,6 +139,7 @@ class MyBrowserHelper(webdriver.Chrome):
             # 20번 시도했으믄 그냥 break
             if count >= 5:
                 break;
+        time.sleep(0.5)
         return split_trans
 
     # 구글 번역 : sk 출발언어, tk 목표언어, st 내용

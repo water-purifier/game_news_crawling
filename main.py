@@ -1,6 +1,8 @@
 import re,_init
 
-comm = _init.CommonFucntion()
-str = 'Pokemon Scarlet/Violet Glitch Lets You Run Twice As Fast With Two Controllers'
-newStr = comm.remove_spe_char(str)
-print(newStr)
+_str = 'A$AP Ant, A$AP Rocky	The God Hour'
+_str2 = r'A$AP Ant, A$AP Rocky	The God Hour'
+print('')
+print(_str)
+print('')
+print(f'{_str}')
