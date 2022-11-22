@@ -1,4 +1,5 @@
 venv/
 .env
 datas/*.json
+datas_ok/*.json
 logs/*.log
