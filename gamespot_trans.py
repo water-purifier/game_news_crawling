@@ -42,6 +42,7 @@ for json_file in json_files:
                     page_dict['page_description_cn'] = browser.google_trans('en', 'zh-CN', page_dict['page_description_en'])
             except Exception as e:
                 logging.error(e)
+
             ##############################################################################################
             #  파일 재저장.
             try:
@@ -50,6 +51,7 @@ for json_file in json_files:
                     print('  #refresh jsonFile ok.')
             except Exception as e:
                 logging.error(e)
+
             ##############################################################################################
             #  db 갱신.
             time.sleep(1)

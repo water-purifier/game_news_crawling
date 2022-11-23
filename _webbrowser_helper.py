@@ -21,6 +21,8 @@ ua = UserAgent()
 
 class MyBrowserHelper(webdriver.Chrome):
     def __init__(self, url, driver_path):
+        load_dotenv()
+
         caps = DesiredCapabilities().CHROME
         caps["pageLoadStrategy"] = "eager"  # interactive
         self.header = {'User-Agent': ua.chrome}
@@ -34,7 +36,8 @@ class MyBrowserHelper(webdriver.Chrome):
         self.options.add_argument("--disable-javascript")
         ##################################################################################
         self.options.add_argument("--no-sandbox")
-        # self.options.add_argument("--headless")
+        if os.getenv("IS_HEADLESS")=="1":
+            self.options.add_argument("--headless")
         self.options.add_argument("--disable-dev-shm-usage")
         self.options.add_argument("user-datas-dir=./venv/lib/python3.9/site-packages/selenium")
         self.options.add_argument("--disable-blink-features=AutomationControlled")
@@ -42,7 +45,6 @@ class MyBrowserHelper(webdriver.Chrome):
         self.driver.set_window_size(2560, 1440)
         self.driver.implicitly_wait(1)
         self.driver.get(url)
-        load_dotenv()
         self.input_xpath = os.getenv("INPUT_XPATH")
         self.output_xpath = os.getenv("OUTPUT_XPATH")
         self.clear_xpath = os.getenv("CLEAR_XPATH")
