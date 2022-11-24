@@ -101,6 +101,13 @@ class MyBrowserHelper(webdriver.Chrome):
             texts.append(_element.text)
         return texts
 
+    def get_elements_href(self,_xpath):
+        _elements = self.driver.find_elements(By.XPATH,_xpath)
+        hrefs = []
+        for _element in _elements:
+            hrefs.append(_element.get_attribute('href'))
+        return hrefs
+
     # 지정 버튼의 xpath를 보내면, 클릭함.
     def click_element(self, _xpath):
         try:

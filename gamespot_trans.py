@@ -1,6 +1,6 @@
 import json, time, os, glob, logging, requests
 from dotenv import load_dotenv
-import _webbrowser_helper
+import _webbrowser_helper,_init
 
 load_dotenv()
 logging.basicConfig(filename='./logs/gamespot_trans.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(name)s %(message)s')
@@ -8,6 +8,7 @@ logging.basicConfig(filename='./logs/gamespot_trans.log', level=logging.ERROR, f
 # init values
 driver_path = os.getenv('DRIVER_PATH')
 api_server = os.getenv('API_SERVER')
+comm = _init.CommonFucntion()
 
 # browser
 browser = _webbrowser_helper.MyBrowserHelper(f'https://translate.google.com/', driver_path)
@@ -23,6 +24,9 @@ for json_file in json_files:
     with open(json_file) as file:
         page_dict = json.load(file)
         if page_dict:
+            # datas_ok/1100-1343422.json 있을시 번역 패스, 추가 패스.
+            if comm.json_exists('./datas_ok/' + page_dict['page_pid'] + '.json'):
+                continue
             ##############################################################################################
             #  번역 부분 google_trans(sk,tk,st) sk: from_lang , kt: to_lang , st : text_ori
             print('')
@@ -44,22 +48,23 @@ for json_file in json_files:
                 logging.error(e)
 
             ##############################################################################################
+            #  db 갱신.
+            time.sleep(0.5)
+            res = requests.post(f'{api_server}/api/posts', json=page_dict)
+            # 상태코드 200일시 해당 파일 삭제
+            if res.status_code == 200:
+                print(f'ok : {json_file}')
+            else:
+                logging.error(f'error :{page_dict} , : code : {res.status_code}')
+
+
+            ##############################################################################################
             #  파일 재저장.
             try:
-                with open(f'./datas/{page_dict["page_title_en"]}.json', 'w', encoding='utf-8') as outfile:
+                with open(f'./datas_ok/{page_dict["page_pid"]}.json', 'w', encoding='utf-8') as outfile:
                     json.dump(page_dict, outfile)
                     print('  #refresh jsonFile ok.')
             except Exception as e:
                 logging.error(e)
 
-            ##############################################################################################
-            #  db 갱신.
-            time.sleep(1)
-            res = requests.post(f'{api_server}/api/posts', json=page_dict)
-            # 상태코드 200일시 해당 파일 삭제
-            if res.status_code == 200:
-                os.remove(json_file)
-                print(f'ok : {json_file}')
-            else:
-                logging.error(f'error :{page_dict} , : code : {res.status_code}')
             print('##############################################################################################')

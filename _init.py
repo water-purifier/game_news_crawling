@@ -1,4 +1,4 @@
-import time,re
+import time,re,os.path
 from datetime import datetime
 import pyperclip as pc
 
@@ -34,3 +34,16 @@ class CommonFucntion():
                           u"\u3030"
                           "]+", re.UNICODE)
         return re.sub(emoj, '', data)
+
+
+    def get_pid(self,_url):
+        xs = re.findall("/\d+-\d+/", _url)
+        for x in xs:
+            return x.replace('/', '')
+        return '0000'
+
+    def json_exists(self,file_path_name):
+        if os.path.isfile(file_path_name):
+            return True
+        else:
+            return False
