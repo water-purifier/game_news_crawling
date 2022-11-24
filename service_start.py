@@ -146,12 +146,17 @@ for json_file in json_files:
             ##############################################################################################
             #  db 갱신.
             time.sleep(0.5)
-            res = requests.post(f'{api_server}/api/posts', json=page_dict)
-            # 상태코드 200일시 해당 파일 삭제
-            if res.status_code == 200:
-                print(f'ok : {json_file}')
-            else:
-                logging.error(f'error :{page_dict} , : code : {res.status_code}')
+            try:
+                res = requests.post(f'{api_server}/api/posts', json=page_dict)
+                # 상태코드 200일시 해당 파일 삭제
+                if res.status_code == 200:
+                    print(f'ok : {json_file}')
+                elif res.status_code == 202:
+                    print(f'exists : {json_file}')
+                else:
+                    logging.error(f'error :{page_dict} , : code : {res.status_code}')
+            except Exception as e:
+                logging.error(e)
 
             ##############################################################################################
             #  파일 재저장.
