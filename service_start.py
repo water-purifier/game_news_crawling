@@ -189,7 +189,7 @@ def job():
     print(f'all service is done. loading 3 hours')
 
 # schedule.every().day.at("06:18").do(job)
-schedule.every(3).hour.do(job)
+schedule.every(3).hours.do(job)
 # schedule.every(10).seconds.do(job)
 
 while True:
