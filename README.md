@@ -7,4 +7,4 @@
 > 
 > pip3 install pyperclip
 > 
-
+> pip3 install schedule
