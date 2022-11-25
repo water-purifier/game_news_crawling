@@ -3,22 +3,24 @@ import json, time, os, glob, logging, requests, schedule
 import _webbrowser_helper, _init
 from dotenv import load_dotenv
 
-
 def job():
+    ################################################################################################################################
+    # init values
     load_dotenv()
     logging.basicConfig(filename='./logs/service_start.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(name)s %(message)s')
-
-
-    # init values
     domain = os.getenv('DOMAIN')
     driver_path = os.getenv('DRIVER_PATH')
-    browser = _webbrowser_helper.MyBrowserHelper(f'https://bing.com', driver_path)
     start_page = int(os.getenv('START_PAGE'))
     api_server = os.getenv('API_SERVER')
-
     comm = _init.CommonFucntion()
+    browser = _webbrowser_helper.MyBrowserHelper(f'https://bing.com', driver_path)
+    print('init value OK . service starting!')
+    # init end
+    ################################################################################################################################
 
-    print('')
+
+    ################################################################################################################################
+    # getter start  =======  page_dict 가져오기 ==> datas에 저장.
     while start_page > 0:
         browser.get_url(f'{domain}/news/?page={start_page}')
         _urls = []
@@ -107,11 +109,14 @@ def job():
         print('###########################################################################')
         # print(page_dicts)
         start_page = start_page - 1
-    print('OK!')
+    print('getter end!')
     # getter end
+    ################################################################################################################################
+
+
 
     ################################################################################################################################
-    # trans
+    # setter start ======= datas에 json 을 번역 , api_server에 post
     # json 파일 읽기
     json_dir = os.getenv('JSON_DIR')
 
@@ -171,7 +176,17 @@ def job():
                     logging.error(e)
 
                 print('##############################################################################################')
+    print('setter end!')
+    # setter end
+    ################################################################################################################################
 
+
+    ################################################################################################################################
+    # next_js : npm run build ; pm2 restart 0 ==> 나 미쳤다, 너무 잘한다. 문제해결능력 갑~~!!!
+    print('next web server rebuilding && restarting')
+    command_line = "ssh funcode@iqiafan.com -p 20022 'cd ~/iqiafan.v2/game_news_next_js/; source ~/.nvm/nvm.sh ;npm run build; pm2 restart 0'"
+    os.system(command_line)
+    print(f'all service is done. loading 3 hours')
 
 # schedule.every().day.at("06:18").do(job)
 # schedule.every(3).hour.do(job)
