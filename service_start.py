@@ -1,5 +1,5 @@
 ## gamespot.com 에 뉴스 끌어오기.
-import json, time, os, glob, logging, requests, schedule
+import json, time, os, glob, logging, requests
 import _webbrowser_helper, _init
 from dotenv import load_dotenv
 
@@ -189,12 +189,11 @@ def job():
     print(f'all service is done. loading 3 hours')
 
 # first just run once!
-job()
 
 # schedule.every().day.at("06:18").do(job)
-schedule.every(3).hours.do(job)
+# schedule.every(3).hours.do(job)
 # schedule.every(10).seconds.do(job)
 
 while True:
-    schedule.run_pending()
-    time.sleep(600)
+    job()
+    time.sleep(18000)
