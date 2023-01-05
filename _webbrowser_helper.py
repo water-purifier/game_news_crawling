@@ -14,7 +14,8 @@ from dotenv import load_dotenv
 
 
 ## trans
-logging.basicConfig(filename='./logs/gamespot_getter_broswer.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(name)s %(message)s')
+logging.basicConfig(filename='./logs/gamespot_getter_broswer.log', level=logging.ERROR,
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
 
 ua = UserAgent()
 
@@ -36,7 +37,7 @@ class MyBrowserHelper(webdriver.Chrome):
         self.options.add_argument("--disable-javascript")
         ##################################################################################
         self.options.add_argument("--no-sandbox")
-        if os.getenv("IS_HEADLESS")=="1":
+        if os.getenv("IS_HEADLESS") == "1":
             self.options.add_argument("--headless")
         self.options.add_argument("--disable-dev-shm-usage")
         self.options.add_argument("user-datas-dir=./venv/lib/python3.9/site-packages/selenium")
@@ -79,17 +80,23 @@ class MyBrowserHelper(webdriver.Chrome):
 
     # element.text 반환
     def get_element_text(self, _xpath):
-        if len(self.driver.find_elements(By.XPATH, _xpath)):
-            return self.driver.find_elements(By.XPATH, _xpath)[0].text
-        else:
+        try:
+            if len(self.driver.find_elements(By.XPATH, _xpath)):
+                return self.driver.find_elements(By.XPATH, _xpath)[0].text
+            else:
+                return ''
+        except Exception as e:
             return ''
 
     # element.get_attribute('src') 등 값 반환,
     # xpath , value ==> src , href 등.
     def get_element_attribute(self, _xpath, value):
-        if len(self.driver.find_elements(By.XPATH, _xpath)):
-            return self.driver.find_elements(By.XPATH, _xpath)[0].get_attribute(value)
-        else:
+        try:
+            if len(self.driver.find_elements(By.XPATH, _xpath)):
+                return self.driver.find_elements(By.XPATH, _xpath)[0].get_attribute(value)
+            else:
+                return ''
+        except Exception as e:
             return ''
 
     # elements.text 값 반환 array 형식
@@ -101,8 +108,8 @@ class MyBrowserHelper(webdriver.Chrome):
             texts.append(_element.text)
         return texts
 
-    def get_elements_href(self,_xpath):
-        _elements = self.driver.find_elements(By.XPATH,_xpath)
+    def get_elements_href(self, _xpath):
+        _elements = self.driver.find_elements(By.XPATH, _xpath)
         hrefs = []
         for _element in _elements:
             hrefs.append(_element.get_attribute('href'))
@@ -135,7 +142,7 @@ class MyBrowserHelper(webdriver.Chrome):
         if len(self.driver.find_elements(By.XPATH, self.output_xpath)):
             self.click_element(self.clear_xpath)
         # \t 가 있으면, tab 으로 여겨서, 붙여넣기 안됨. 그리하여 strip(c# 의 trim비슷)하여, \t \n , . 등을 없앨수 있음.
-        text = text.replace('\t','')
+        text = text.replace('\t', '')
         input_element.send_keys(text)
         split_trans = ""
         count = 0

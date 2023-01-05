@@ -32,7 +32,7 @@ def job():
             _elements = browser.get_elements('//section[@class="promo--container container row span12"]/a')
             for _element in _elements:
                 _urls.append(_element.get_attribute('href'))
-            _elements = browser.get_elements('//div[@class="promo-strip__item  "]/a')
+            _elements = browser.get_elements('//div[@class="promo-strip__item "]/a')
             for _element in _elements:
                 _urls.append(_element.get_attribute('href'))
 
