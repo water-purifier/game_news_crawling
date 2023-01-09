@@ -3,11 +3,13 @@ import json, time, os, glob, logging, requests
 import _webbrowser_helper, _init
 from dotenv import load_dotenv
 
+
 def job():
     ################################################################################################################################
     # init values
     load_dotenv()
-    logging.basicConfig(filename='./logs/service_start.log', level=logging.ERROR, format='%(asctime)s %(levelname)s %(name)s %(message)s')
+    logging.basicConfig(filename='./logs/service_start.log', level=logging.ERROR,
+                        format='%(asctime)s %(levelname)s %(name)s %(message)s')
     domain = os.getenv('DOMAIN')
     driver_path = os.getenv('DRIVER_PATH')
     start_page = int(os.getenv('START_PAGE'))
@@ -17,7 +19,6 @@ def job():
     print('init value OK . service starting!')
     # init end
     ################################################################################################################################
-
 
     ################################################################################################################################
     # getter start  =======  page_dict 가져오기 ==> datas에 저장.
@@ -31,16 +32,24 @@ def job():
         if start_page == 1:
             _elements = browser.get_elements('//section[@class="promo--container container row span12"]/a')
             for _element in _elements:
-                _urls.append(_element.get_attribute('href'))
+                try:
+                    _urls.append(_element.get_attribute('href'))
+                except Exception as e:
+                    logging.error(e)
             _elements = browser.get_elements('//div[@class="promo-strip__item "]/a')
             for _element in _elements:
-                _urls.append(_element.get_attribute('href'))
-
+                try:
+                    _urls.append(_element.get_attribute('href'))
+                except Exception as e:
+                    logging.error(e)
         ######################################################################################################
         ## normal articles
         _elements = browser.get_elements('//a[@class="card-item__link text-decoration--none "]')
         for _element in _elements:
-            _urls.append(_element.get_attribute('href'))
+            try:
+                _urls.append(_element.get_attribute('href'))
+            except Exception as e:
+                logging.error(e)
 
         print('###########################################################################')
         print(f'page: {start_page} --> items: {len(_urls)}')
@@ -68,8 +77,11 @@ def job():
                         "page_description_cn": "",
                         "page_author": browser.get_element_text('//*[@class="byline-author__name"]'),
                         "page_date": browser.get_element_attribute('//*[@class="news-byline"]/time', 'datetime'),
-                        "page_text_html": browser.get_element_attribute('//*[@class="js-content-entity-body content-entity-body"]', 'innerHTML'),
-                        "page_text_en": comm.remove_emojis(browser.get_element_attribute('//*[@class="js-content-entity-body content-entity-body"]', 'innerText')),
+                        "page_text_html": browser.get_element_attribute(
+                            '//*[@class="js-content-entity-body content-entity-body"]', 'innerHTML'),
+                        "page_text_en": comm.remove_emojis(
+                            browser.get_element_attribute('//*[@class="js-content-entity-body content-entity-body"]',
+                                                          'innerText')),
                         "page_text_ko": '',
                         "page_text_cn": '',
                         "page_tags": browser.get_elements_text('//a[@class="font-base"]'),
@@ -81,16 +93,22 @@ def job():
                         "page_url": _url,
                         "page_pid": _pid,
                         "page_title_en": comm.remove_emojis(
-                            comm.remove_spe_char(browser.get_element_text('//*[@class="news-title instapaper_title entry-title type-headline"]'))),
+                            comm.remove_spe_char(browser.get_element_text(
+                                '//*[@class="news-title instapaper_title entry-title type-headline"]'))),
                         "page_title_ko": "",
                         "page_title_cn": "",
-                        "page_description_en": comm.remove_emojis(browser.get_element_text('//*[@class="news-deck type-subheader"]')),
+                        "page_description_en": comm.remove_emojis(
+                            browser.get_element_text('//*[@class="news-deck type-subheader"]')),
                         "page_description_ko": "",
                         "page_description_cn": "",
                         "page_author": browser.get_element_text('//*[@class="byline-author__name"]'),
-                        "page_date": browser.get_element_attribute('//*[@class="news-byline pull-left text-base no-rhythm"]/time', 'datetime'),
-                        "page_text_html": browser.get_element_attribute('//*[@class="js-content-entity-body content-entity-body"]', 'innerHTML'),
-                        "page_text_en": comm.remove_emojis(browser.get_element_attribute('//*[@class="js-content-entity-body content-entity-body"]', 'innerText')),
+                        "page_date": browser.get_element_attribute(
+                            '//*[@class="news-byline pull-left text-base no-rhythm"]/time', 'datetime'),
+                        "page_text_html": browser.get_element_attribute(
+                            '//*[@class="js-content-entity-body content-entity-body"]', 'innerHTML'),
+                        "page_text_en": comm.remove_emojis(
+                            browser.get_element_attribute('//*[@class="js-content-entity-body content-entity-body"]',
+                                                          'innerText')),
                         "page_text_ko": '',
                         "page_text_cn": '',
                         "page_tags": browser.get_elements_text('//a[@class="font-base"]'),
@@ -112,8 +130,6 @@ def job():
     print('getter end!')
     # getter end
     ################################################################################################################################
-
-
 
     ################################################################################################################################
     # setter start ======= datas에 json 을 번역 , api_server에 post
@@ -141,13 +157,15 @@ def job():
                         print('#text_ko', end='')
                         page_dict['page_text_ko'] = browser.google_trans('en', 'ko', page_dict['page_text_en'])
                         page_dict['page_title_ko'] = browser.google_trans('en', 'ko', page_dict['page_title_en'])
-                        page_dict['page_description_ko'] = browser.google_trans('en', 'ko', page_dict['page_description_en'])
+                        page_dict['page_description_ko'] = browser.google_trans('en', 'ko',
+                                                                                page_dict['page_description_en'])
 
                     if os.getenv('IS_CN') == '1':
                         print('#text_cn', end='')
                         page_dict['page_text_cn'] = browser.google_trans('en', 'zh-CN', page_dict['page_text_en'])
                         page_dict['page_title_cn'] = browser.google_trans('en', 'zh-CN', page_dict['page_title_en'])
-                        page_dict['page_description_cn'] = browser.google_trans('en', 'zh-CN', page_dict['page_description_en'])
+                        page_dict['page_description_cn'] = browser.google_trans('en', 'zh-CN',
+                                                                                page_dict['page_description_en'])
                 except Exception as e:
                     logging.error(e)
 
@@ -180,13 +198,13 @@ def job():
     # setter end
     ################################################################################################################################
 
-
     ################################################################################################################################
     # next_js : npm run build ; pm2 restart 0 ==> 나 미쳤다, 너무 잘한다. 문제해결능력 갑~~!!!
     print('next web server rebuilding && restarting')
     command_line = "ssh funcode@iqiafan.com -p 20022 'cd ~/iqiafan.v2/game_news_next_js/; source ~/.nvm/nvm.sh ;npm run build; pm2 restart 0'"
     os.system(command_line)
     print(f'all service is done. loading 3 hours')
+
 
 # first just run once!
 
