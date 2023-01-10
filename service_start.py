@@ -213,5 +213,8 @@ def job():
 # schedule.every(10).seconds.do(job)
 
 while True:
-    job()
-    time.sleep(18000)
+    try:
+        job()
+        time.sleep(36000)
+    except Excption as e:
+        logging.error(e)
