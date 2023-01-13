@@ -216,5 +216,5 @@ while True:
     try:
         job()
         time.sleep(36000)
-    except Excption as e:
+    except Exception as e:
         logging.error(e)
